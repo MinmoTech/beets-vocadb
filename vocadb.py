@@ -21,7 +21,7 @@ class VocaDBPlugin(BeetsPlugin):
             'artist_priority': ['producers', 'circles'],
             'circles_exclude': [],
             'genres': True,
-            'lang-priority': 'English'  # 'Japanese, Romaji, English'
+            'lang-priority': 'Japanese'  # 'Japanese, Romaji, English'
         })
         self._log.debug('Querying VocaDB')
         self.lang = self.config['lang-priority'].get().split(',')
@@ -35,7 +35,7 @@ class VocaDBPlugin(BeetsPlugin):
             dist.add('source', self.config['source_weight'].as_number())
         return dist
 
-    def candidates(self, items, artist, album, va_likely):
+    def candidates(self, items, artist, album, va_likely, extra_tags):
         """Return a list of AlbumInfo objects from the search results
         matching an album and artist (if not various)."""
         query = album
@@ -133,7 +133,7 @@ class VocaDBPlugin(BeetsPlugin):
             song = item['song']
             self._log.debug(f"after song")
         except:
-            return TrackInfo("dummy_title", 0, medium_index=0, medium_total=None, data_source='VocaDB',)
+            return TrackInfo(title="dummy_title", track_id=0, medium_index=0, medium_total=None, data_source='VocaDB',)
 
         title, _ = self.get_preferred_name(item['song'])
         track_id = song['id']
@@ -164,7 +164,13 @@ class VocaDBPlugin(BeetsPlugin):
              if 'Arranger' in _artist['roles'].split(', ')]
         ) or None
 
-        return TrackInfo(title, track_id, artist=artist, artist_id=artist_id,
+        print(TrackInfo(title=title, track_id=track_id, artist=artist, artist_id=artist_id,
+                         length=length, medium=medium,
+                         medium_index=medium_index, medium_total=None,
+                         artist_credit=artist_credit, data_source='VocaDB',
+                         lyricist=lyricist, composer=composer,
+                         arranger=arranger))
+        return TrackInfo(title=title, track_id=track_id, artist=artist, artist_id=artist_id,
                          length=length, medium=medium,
                          medium_index=medium_index, medium_total=None,
                          artist_credit=artist_credit, data_source='VocaDB',
